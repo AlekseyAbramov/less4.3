@@ -66,7 +66,7 @@
             </tr>
         <?php
         
-        $pdo = new PDO("mysql:host=localhost;dbname=netologi;charset=utf8", "root", "");
+        $pdo = new PDO("mysql:host=localhost;dbname=aabramov;charset=utf8", "aabramov", "neto1499");
         $sql_sort = "";
         $user_id = $_SESSION['id'];
         if (!empty($_POST)){
