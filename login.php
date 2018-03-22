@@ -1,5 +1,7 @@
 <?php
+    include_once 'connect.php';
     session_start();
+    
     if (!empty($_POST)) {
         if(!empty($_POST['register'])) {
              if ($_POST['login'] && !$_POST['password']) {
@@ -14,15 +16,17 @@
              if ($_POST['login'] && $_POST['password']) {
                   $user = strip_tags($_POST['login']);
                   $password = password_hash(strip_tags($_POST['password']), PASSWORD_DEFAULT);
-                  $pdo = new PDO("mysql:host=localhost;dbname=netologi;charset=utf8", "root", "");
                   $sth = $pdo->prepare("SELECT `login` FROM `user` WHERE login=?");
                   $sth->execute(array($user));
                   $w = $sth->fetchColumn();
                   if($w) {
                      echo 'Такой пользователь уже есть. Введите другой логин.';
                  } else {
-                     $sql_add_user = "INSERT INTO `user`(`login`, `password`) VALUES ('$user','$password')";
-                     $pdo->query($sql_add_user);
+                     $names = $user. ','. $password;
+                     $names = explode(',', $names);
+                     $placeholder = implode(',', array_fill(0, count($names), '?'));
+                     $sth = $pdo->prepare("INSERT INTO `user`(`login`, `password`) VALUES ($placeholder)");
+                     $sth->execute($names);
                      echo 'Вы успешно зарегистрировались, можите войти в систему.';
                   }
              }   
@@ -41,7 +45,6 @@
             if($_POST['login'] && $_POST['password']) {
                 $user = strip_tags($_POST['login']);
                 $password = $_POST['password'];
-                $pdo = new PDO("mysql:host=localhost;dbname=netologi;charset=utf8", "root", "");
                 $sth = $pdo->prepare("SELECT `id`, `login`, `password` FROM `user` WHERE login=?");
                 $sth->execute(array($user));
                 $w = $sth->fetch();

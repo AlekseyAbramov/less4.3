@@ -65,8 +65,7 @@
                 <th>Закрепить задачу за пользователем</th>
             </tr>
         <?php
-        
-        $pdo = new PDO("mysql:host=localhost;dbname=aabramov;charset=utf8", "aabramov", "neto1499");
+        include_once 'connect.php';
         $sql_sort = "";
         $user_id = $_SESSION['id'];
         if (!empty($_POST)){
@@ -163,7 +162,6 @@
                echo "<td>Вы</td>";
                echo "<td>". $row['login']. "</td>";
             }
-            var_dump($user_id);
             ?>
         </table>
         <p><a href="logout.php">Выйти из системы</a></p>
