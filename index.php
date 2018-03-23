@@ -108,35 +108,35 @@
             $sql = "SELECT task.id, task.user_id, task.assigned_user_id, task.description, task.is_done, task.date_added, user.login FROM `task` LEFT JOIN user ON task.user_id=user.id WHERE user_id='$user_id'";
         }
    
-        foreach ($pdo->query($sql) as $row) {
-            echo "<tr><td>". $row['description'] . "</td>";
-            echo "<td>". $row['date_added'] . "</td>";
-            if (!$row['is_done']){
-                echo "<td><span style='color: orange;'>В процессе</span></td>";
-            } else {
-                echo "<td><span style='color: green;'>Выполнено</span></td>";
-            }
-            echo "<td><a href='?id=". $row['id']. "&action=done'>Выполнить</a>". "  ". "<a href='?id=". $row['id']. "&action=delete'>Удалить</a></td>";
-            if($row['assigned_user_id'] == NULL) {
-             echo "<td>Вы</td>";   
-            } else {
-                echo "<td>"; 
+        foreach ($pdo->query($sql) as $row): ?>
+            <tr><td><?php echo $row['description'] ?></td>
+            <td><?php echo $row['date_added'] ?></td>
+            <?php if (!$row['is_done']): ?>
+                <td><span style='color: orange;'>В процессе</span></td>
+            <?php else: ?>
+                <td><span style='color: green;'>Выполнено</span></td>
+            <?php endif; ?>
+            <td><a href='?id=<?php $row['id'] ?>&action=done'>Выполнить</a>  <a href='?id=<?php $row['id'] ?>&action=delete'>Удалить</a></td>
+            <?php if($row['assigned_user_id'] == NULL): ?>
+                <td>Вы</td>
+            <?php else: ?>
+                <td>
+                <?php
                 $sth =$pdo->prepare("SELECT `login` FROM `user` WHERE id=?");
                 $sth->execute(array($row['assigned_user_id']));
                 $w = $sth->fetchColumn();
                 if($w) {
                     echo $w;
-                }
-                echo "</td>";
-            }
-            echo "<td>". $row['login']. "</td>";
-            echo "<td><form method='POST'>  <select name='assigned_user_id'> "; 
-            foreach ($pdo->query("SELECT `id`, `login` FROM `user`") as $users) {
-                echo "<option value='user_". $users['id']."_task_". $row['id']. "'>". $users['login']. "</option> "; 
-            }
-            echo "  </select>  <input type='submit' name='assign' value='Переложить ответственность' /></form></td></tr>";
-        }
-        ?>
+                } ?>
+                </td>
+            <?php endif; ?>
+            <td><?php echo $row['login'] ?></td>
+            <td><form method='POST'>  <select name='assigned_user_id'>
+            <?php foreach ($pdo->query("SELECT `id`, `login` FROM `user`") as $users): ?>
+                <option value='user_<?php echo $users['id'] ?>_task_<?php $row['id'] ?>'><?php echo $users['login'] ?></option> 
+            <?php endforeach; ?>
+            </select>  <input type='submit' name='assign' value='Переложить ответственность' /></form></td></tr>
+        <?php endforeach; ?>
         </table>    
         <p><strong>Также, посмотрите, что от Вас требуют другие люди:</strong></p>
         <table>
@@ -150,19 +150,18 @@
             </tr>
             <?php
             $sql_select = "SELECT task.id, task.user_id, task.assigned_user_id, task.description, task.is_done, task.date_added, user.login FROM `task` LEFT JOIN user ON task.user_id=user.id WHERE assigned_user_id='$user_id'";
-            foreach ($pdo->query($sql_select) as $row) {
-               echo "<tr><td>". $row['description'] . "</td>";
-               echo "<td>". $row['date_added'] . "</td>";
-               if (!$row['is_done']){
-                    echo "<td><span style='color: orange;'>В процессе</span></td>";
-               } else {
-                    echo "<td><span style='color: green;'>Выполнено</span></td>";
-                 }
-               echo "<td><a href='?id=". $row['id']. "&action=done'>Выполнить</a>". "  ". "<a href='?id=". $row['id']. "&action=delete'>Удалить</a></td>";
-               echo "<td>Вы</td>";
-               echo "<td>". $row['login']. "</td>";
-            }
-            ?>
+            foreach ($pdo->query($sql_select) as $row): ?>
+               <tr><td><?php echo $row['description'] ?></td>
+               <td><?php echo $row['date_added'] ?></td>
+               <?php if (!$row['is_done']): ?>
+                    <td><span style='color: orange;'>В процессе</span></td>
+               <?php else: ?>
+                    <td><span style='color: green;'>Выполнено</span></td>
+               <?php endif; ?>
+               <td><a href='?id=<?php echo $row['id'] ?>&action=done'>Выполнить</a>  <a href='?id=<?php echo $row['id'] ?>&action=delete'>Удалить</a></td>
+               <td>Вы</td>
+               <td><?php echo $row['login'] ?></td></tr>
+            <?php endforeach; ?>
         </table>
         <p><a href="logout.php">Выйти из системы</a></p>
     </body>
